@@ -1,0 +1,213 @@
+Raspberry Pi MP3 player (audio books and music) for visually impaired people
+Klaus & Andreas Noever
+
+
+## Features summary
+
+Text to speech controlled navigation through hierarchical folder structures using an infrared remote control to play mp3 files. No need for internet connection by the end user.
+
+## Hardware components
+
+1. Raspberry Pi (we used a model B+) with case and power supply
+   a. Micro SD card (e.g. 8GB class 10)
+   b. USB stick for the mp3 archive
+2. Headphones, best as wireless, or an amplifier with loudspeakers
+3. Remote control (for testing any USB keyboard or keypad will do)
+   a. FLIRC for decoding IR remote control signals
+   b. Alpine RUE-4202 remote control (others may be appropriate as well)
+4. Improved audio output (to start with you can use the RasPi audio output)
+   USB audio DAC (we used the one from Plugable with a 3.5mm output jacket) 
+5. Wiring (suggestion)
+   a. 2 USB 2.0 A male/female 0.5m extension cables 
+      (for FLIRC and the USB DAC)
+   b. Power supply cable with a switch for easy brute reboot by the end user
+
+## User experience
+
+The user will operate the system using the IR remote control. The system gives access to the entire archive of mp3 files. The user will select the  mp3 files by navigating through the folder hierarchy. Feed-back on the current position (folder name) within the folder hierarchy is given by text to speech audio output. A bookmark will be generated automatically when leaving the mp3 file. The respective folder will store the most recent bookmark so that the user can jump to his previous listening position when re-entering the folder. Volume control is incorporated.
+The system is now in use by my 87-year old aunt who recently got almost completely blind. I trained her for about one hour and she was very happy using the system the next day on her own. Note it may be appropriate for some people to start with a system of reduced functionality (e.g. only one book loaded, only few command buttons activated) and upgrade once they feel more comfortable with the device. 
+The RasPi resides in a small carton box with the FLIRC IR receiver attached to an extension cable and outside the box so that the IR control can interact with the IR receiver.
+
+## Why did we develop another mp3 player for blind people?
+
+Conventional MP3 players usually require visual control for file selection and are therefore very difficult to operate by people with visual impairment.  
+Single file audio players have been proposed as a simple solution. If however the user wants to listen to multiple books or music files then the file selection issue persists. It is just transferred to a procedure outside of the player. For playing a new book, the "one button audio player" project  (http://blogs.fsfe.org/clemens/2012/10/30/the-one-button-audiobook-player/) requires insertion of a USB stick loaded with the new book, while in another project (https://gist.github.com/wkjagt/814b3f62ea03c7b1a765) the already preloaded books  are activated using specific  RFID cards to be swiped over the RasPi.  The different USB sticks or RFID cards would need to be identifiable by the blind person. This can be difficult to implement, especially in case of a larger set of books or music pieces. 
+On the commercial side sophisticated systems have been developed for blind people, such as the Daisy Player Victor Reader Stratus. The device plays back a multitude of audio file formats. In addition it uses text to speech capabilities for navigating through folders and files and also for reading entire text files.
+We aimed at a less expensive solution which provides text to speech controlled navigation through hierarchical folder structures using an infrared remote control to play mp3 files. 
+
+## How it operates
+
+The folder structure is similar to an org chart. There are no constraints on the number of levels or ramifications. In our example we had 2 categories at the first level: literature and (classical) music. The authors or composers names were listed on the 2nd level within each primary folder.  Subsequent lower levels listed book titles or categories such as poems or piano concertos and so on.  MP3 files are stored in the lowest folders.
+
+### Navigation mode
+For selecting a mp3 file of interest, the user may start at the first item on the first level ("literature" in our example). We assigned a special button on the IR remote control which calls up this first position as a short cut.  The audio output will be the folder name, so the user would hear "literature". Using the right (forward) or left (backward) navigation button on the remote control the user can move to other folders on the same level. In our example the next folder would be "music", which would be spoken out if selected.  Folders and files are ordered in numerical and alphabetic order. If the last item within a folder is reached, pressing the right command button will close the loop and the first item will be called up (vice versa for the left command button).  The down button will bring the user to the 2nd level. Within the literature folder, this would be the first author; his name will be spoken out.  Going down further in the folder hierarchy will finally bring the user to the target file he wants to listen to. 
+
+### Play mode
+Pressing the down button, the mp3 file will start playing. An actually playing mp3 file can be paused using the pause button (push again to continue playing). Pushing the right button will forward within the given file by a predefined time increment (we selected 1 minute). Similar functionality applies to the left button. When the end of the file is reached, the next file (if available) within the same folder will be played.  The up button will bring the user back into the file navigation mode so that the name of the current mp3 file is spoken out. 
+
+### Bookmarks
+Once a mp3 file has been playing for a certain amount of time (we selected 30 seconds) a bookmark will be set automatically in the folder of the respective file when leaving the file.  Each folder containing mp3 files will host one bookmark only. Suppose a user is listening to a file of folder audiobook 1 for some time, then he is switching to a file in folder audiobook 2. Let us assume the next day the user wants to continue listening to where he left in audiobook 1. He would have to navigate to folder audiobook 1 and then press the bookmark button. As a result the mp3 file will continue playing at the location (time) where he left. Same procedure applies for continuing the listening experience in audiobook 2. Just go to the folder audiobook 2 and, by activating the bookmark button, continue listening to the mp3 file in audiobook 2 at the location left previously. 
+
+## Folder hierarchy
+
+Navigating through the folder hierarchy using text to speech is a quite different user experience compared to display-based folder navigation. Visual display of folder and file titles allows handling of large flat file listings, as perception can be focused on text snippets of interest, disregarding all other irrelevant information. This is in contrast when using text to speech. The listener is forced into a somewhat linear perception mode obliging him to listen to what the system speaks out whether this is relevant or redundant. Accordingly the organizational folder and file structure we use in conventional mp3 collections may need to be modified to keep the folder and file navigation process an efficient and relaxing experience to the listener. The following rules may be worth considering when writing the text that will be spoken out:
+1. The text should not be extremely short, e.g. a single word like "one" may be missed by the user or the context may be unclear. It would be better to say "chapter one".
+2. The text should not be too long or include too much redundant info. A folder title of a book written by A. E. Poe may not need to include the author's name again if the parent folder clearly indicates that the author is Edgar Allen Poe.
+3. Limit the number of subfolders within the same hierarchy level to about 10 folders. E.g. instead of putting 20 authors in the parent folder "literature", one could create a parent folder named "authors A to M" and another one "authors N to Z". 
+4. The number of mp3 files to be put into a folder will depend on whether you listen to prose, poems, classical music or pop music and of course on the listening habits of the user. 
+   a. I put all 137 mp3 files of the book "Sense and Sensibility" (by Jane Austen) into one folder "Sense and Sensibility" knowing that my aunt will start listening at file number 1 (which is easy to locate since it is the first one to be called up when navigating into the book folder). The next day she would use the pause/resume button or the bookmark button to continue listening where she left the day before.
+   b. For poems, the listening experience is quite different as they are usually selected and listened to on an individual basis. Accordingly I would not put more than 10 poems into one folder.
+   c. For classical music I found that very often it is appropriate to include in one folder the content of the corresponding CD which is about 60 minutes of music. Note that users who love listening to background music continuously will require a different approach.  
+5. The program makes use of the google translation service to record the spoken words. The program will only use one single language (which you can define) for calling out all folders and files.  If e.g. the language is set to English and some of the text is in a different language (say French author or German music piece) this may result in some strange pronunciations. Accordingly keep foreign language usage at a minimum.
+6. The text used to generate the speech is derived from the folder names. However for mp3 files the text is derived from the mp3 tag "title". This is to keep the filenames untouched while giving full freedom to create appropriate "titles" within the hierarchical folder structure. I used MediaMonkey on a Windows system for editing the titles.
+7. Each level of the folder hierarchy should be composed of folders only. Each folder should contain exclusively either subfolders or mp3 files. Do not include any other type of files such as picture files or text files.
+The archive must be stored on a USB drive. The drive must be named "LOAD". The path to the archive on LOAD is mpd/music/.  The folder "music" will contain the entire archive. In my example the folder "music" would have 2 subfolders: literature and music. Note that the archive will not be copied to the micro-SD card of the RasPi.
+
+## Remote control
+
+The IR remote control should have a button layout which an elderly person can easily understand and make out by touch. The number of buttons should be kept at a minimum. The following buttons are required:
+1. Four navigation buttons, best arranged in a circle: up, down, right (forward), left (backward)
+2. Pause button, best located in the center of the navigation circle
+3. Button for activating a bookmark
+4. Optional: button with shortcut to the first folder in the first hierarchy level
+5. Optional: volume control (up and down). The volume control may be already integrated into the headphone; however we preferred to have it operable from the remote control. Volume control is required at all levels of the folder hierarchy and of course when playing the mp3 file. 
+The IR remote control from Apple looks attractive and would be worth testing if no volume control was required. However since we wanted to incorporate the volume control feature we did not test the Apple remote control.
+We used FLIRC to decode the IR signals. We first tried a nice looking remote control from QNAS, but we did not manage to get it working reliably. We finally opted for the Alpine RUE-4202 remote control. http://www.amazon.de/Alpine-RUE-4202-Infrarot-Fernbedienung/dp/B001DHK8Z6/ref=sr_1_fkmr0_1?ie=UTF8&qid=1425573298&sr=8-1-fkmr0&keywords=alpine+rue+4191 This device does not look that pretty but it is very robust and reliable. The assignment of buttons is straightforward for the navigation and pause buttons. Volume up and down was assigned to the buttons ^ and ? for small changes and for large changes to the 2 buttons above. The single button on the upper right corner got the shortcut to the first folder in the first hierarchy level. The bookmark was assigned to the 2 buttons below the navigation circle. The text on the buttons is irrelevant.
+When setting up FLIRC, individual characters need to be assigned to the various command buttons of the IR remote control. The FLIRC software and home page will guide you through the assignment process.  We found the process works best if the keyboard layout of your Windows computer is set to US English and not to German, French or any other language keyboard layout. Otherwise some ambiguities may occur.
+We established the following correspondence between the command buttons and the keyboard characters:
+* Navigation buttons
+  o Right (>>|): r
+  o Left (|<<): l
+  o Up (^): u
+  o Down (down): d
+* Pause/Resume button (>/||): p
+* Volume control (these buttons are located above the navigation buttons)
+  o Down, small change (down): v
+  o Up, small change (^): m
+  o Down, large change (SOURCE): g
+  o Up, large change (BAND): q
+* Short-cut to first folder at first level of archive (POWER): z
+* Activation of bookmark (note the 2 listed buttons will have the same effect)
+  o (A.PROC): w
+  o (MUTE): t
+
+## Volume control
+
+RasPi's audio output quality is acceptable only if the volume is set to 100% at the music player daemon (mpd) level. Any reduction in volume on the software side will dramatically degrade the audio quality. 
+There are better options for controlling volume:
+* Some headphones, especially wireless headphones, are equipped with a volume control.  Unless you have a very cheap model, no negative impact on sound quality should be expected.
+* Use an audio cable with a variable resistor for volume control to connect the RasPi with the headphone. However some negative impact on sound quality should be expected.
+* If using an external amplifier with loudspeakers, the amp will have a volume control without negative impact on sound quality
+* Use an external audio converter (USB DAC) and have the volume control performed on that hardware without loss in quality.
+The program is configurable to using either an external USB DAC or the internal DAC for volume control.  Note that if no external DAC is used and the program configuration is not set accordingly, the program will crash upon activation of a volume command.
+
+## Acoustic feedback on command button actions
+
+It is often suggested that a command on the IR remote device be validated by a standard acoustic signal to confirm to the user it was received and will be executed. We did not implement a standard acoustic signal as our system gives specific feedback on most navigation and player commands. There are however some situations where the user may be uncertain about whether his commands are executed or not. It would be important to make the user aware of the following:
+1. When selecting the target mp3 file and activating the play mode by pushing the down command, there may be a silence of a few seconds corresponding to the recorded start silence on the mp3 file. Note that pushing the down command a second time does not induce any further activity, so an impatient user may push the button again without any harm.
+2. The system will keep the most recent bookmarks for different books stored in different folders. For activation of a specific bookmark the user must navigate down to the folder containing the file of interest. The folder name is usually the title of the book (you may have implemented another folder hierarchy concept). 
+   A bookmark can also be activated by a starting to play any file in the folder and then pushing the bookmark command. Note that the old bookmark will be replaced by a new one (at the current location) when navigating away after listening longer than 30 seconds.
+   There will be no activity (and no acoustic feedback) if there is no bookmark set or if the bookmark command button is pressed when navigating at higher hierarchy levels.
+3. The volume level may be set too low to get acoustic feed-back.
+
+## How the program works
+
+The program is written in python 2.7. The program prints its major activities on the screen. 
+Configurable items are:
+1. Use of external USD DAC (default: no external DAC)
+2. Language for text to speech (default: English)
+3. Minimal time delay between commands (default: 0.3 seconds)
+Every time a USB drive named LOAD is connected to the RasPi, the program will mount the drive and check all folders and files of the mp3 collection for corresponding text to speech files. We called these text to speech files "metafiles". Missing metafiles will be generated via internet access to translate.google. The metafiles (*tts.mp3) are stored permanently in metafolders (.meta) at each hierarchy level on the external USB drive.   
+Metafiles could be missing for the following reasons:
+1. The archive on the USB device is new or has been modified
+2. Despite a functional internet connection translate.google did not respond, which may happen from time to time
+At the next program start or new connection of the USB drive, any missing metafile will trigger an attempt to connect to translate.google to generate the missing metafile. If the attempt is not successful, the program will not abort but continue with the next instruction. 
+Note that the end user is not expected to connect the RasPi to the internet. You (the administrator) are supposed to provide the user with an archive that includes all the metafiles.
+Once the program has gone through the metafile search and generation process it will activate the MPD Client. It is now ready to play mp3 files and will execute the commands received from the infrared remote control (or from the keyboard) as long as the USB device stays connected. The commands will trigger specific actions, some of them depending on whether the user is navigating through the folder hierarchy (FolderBrowser) or actually playing a (non-metafile) mp3 file (MusicPlayer). 
+Note that we added an intra/inter key delay of 0.3 seconds meaning that command button activations will only be taken into account if they occur 0.3 seconds apart. This may need to be adjusted on an individual user level.
+Bookmarks will be created as text files (*bookmark.txt) located in the corresponding folder. Within a given folder an older bookmark will be replaced by the new one so that each folder will contain only a single bookmark.
+
+## Installing software and adjusting settings
+
+1. Prepare a test USB stick called LOAD with a small collection of folders and mp3 files
+   For testing purposes create a 3 to 4 folder level hierarchy with about 20 mp3 files. 
+   Your 1st folder hierarchy should be copied into the folder /mpd/music , see section "The Folder Hierarchy"
+2. RASPBIAN
+   We suggest starting with a fresh installation of RASPBIAN on your Raspberry.
+   Note that the archive of the mp3 files will not be transferred to the micro SD card, so a size of 8 GB is largely sufficient for the micro SD card.
+   In the RasPi set-up menu, enable SSH (in Advanced Options).
+   Take note of the assigned IP address.
+3. Configuration
+   a. install additional modules (internet connection required)
+      sudo apt-get install python-dev
+      sudo apt-get install mpd
+      sudo apt-get install mpc
+      sudo apt-get install python-mpd 
+      sudo apt-get install python-pyudev
+      sudo apt-get install eyeD3
+   b. create link and make files available to mpd
+      sudo rmdir /var/lib/mpd/music
+      sudo mkdir /mnt/usb
+      sudo ln -s /mnt/usb/mpd/music /var/lib/mpd
+      sudo chown -R mpd /var/lib/mpd
+   c. only if using external USB DAC
+      1. sudo nano /etc/modprobe.d/alsa-base.conf
+         set: options snd-usb-audio index=0 (default was "-2")
+         add: options snd_bcm2835 index=1
+      2. connect USB DAC to RasPi
+   d. reboot
+4. Test run (internet connection required)
+   a. save audioplayer.py in folder /home/pi
+   b. optional: change configuration
+      1. sudo nano audioplayer.py
+         if no external audio USB DAC: USB_audio=0 
+         if using external audio USB DAC: USB_audio=1
+      2. language = "en"
+         other languages, see: https://sites.google.com/site/tomihasa/google-language-codes
+      3. key_delay = 0.3 (default)
+   c. plug USB drive named "LOAD" (with mp3 archive) to RasPi
+   d. connect headphones or amplifier either to RasPi directly or to USB DAC, as configured
+   e. sudo python audioplayer.py
+   f. on the screen you should see the following 
+      (this example has only 2 metafiles (Literatur, Musik) downloaded):
+
+pi@raspberrypi ~ $ sudo python audioplayer.py
+[ ok ] Stopping Music Player Daemon: mpd.
+Waiting for usb device 'LOAD'
+Mounting /dev/sda1
+Downloading TTS for /var/lib/mpd/music/Literatur: Literatur
+tts:  Literatur
+Downloading TTS for /var/lib/mpd/music/Musik: Musik
+tts:  Musik
+[....] Starting Music Player Daemon: mpdlisten: bind to '[::1]:6600' failed: Failed to create socket: Address family not supported by protocol (continuing anyway, because binding to '127.0.0.1:6600' succeeded)
+. ok
+Updating DB (#1) ...
+volume: n/a   repeat: off   random: off   single: off   consume: of
+playing /var/lib/mpd/music/.meta/Literatur_tts.mp3
+
+   g. at the end you should hear the first folder name of the first hierarchy level spoken out, which would be "Literatur" in my example
+   h. You can browse through the folder and listen to files by using the appropriate keyboard commands as specified in section "The Remote Control"
+5. FLIRC and IR remote
+   a. On a Windows PC assign command buttons to keyboard characters
+      See section "The Remote Control" for allocation and FLIRC webpage
+   b. Connect FLIRC to RasPi using extension cable
+   c. Reboot, restart audioplayer.py and check IR commands
+6. Finalize the mp3 collection with the optimal folder hierarchy on Windows PC. 
+   Add all the metafiles by running audioplayer.py (internet connection required). Test thoroughly.
+7. Configure automatic start of audioplayer.py
+   a. Sudo nano /etc/inittab
+      1. Modify 
+         1:2345:respawn:/sbin/getty --noclear 38400 tty1
+         to
+         1:23:respawn:/sbin/getty 38400 tty1 --noclear -l /usr/bin/python -o /home/pi/audioplayer.py -n
+      2. Modify
+         2:23:respawn:/sbin/getty 38400 tty2 
+         to
+         2:2345:respawn:/sbin/getty 38400 tty2
+   b. sudo reboot
+   c. Raspi will execute audioplayer.py at start without requiring log in. A monitor attached to the RasPi will document the progress of the program execution. If you interrupt the program using control c, it will restart.
+   d. For accessing the LINUX command shell, use a terminal window program like PuTTY on your Windows PC to connect to RasPi by LAN. 
+
+
+
+
