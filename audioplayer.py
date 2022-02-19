@@ -31,7 +31,9 @@ language='de'
 key_delay=0.3
 
 
+from asyncore import file_dispatcher
 import os
+from platform import mac_ver
 import pyudev
 import eyeD3
 import urllib
@@ -118,7 +120,7 @@ class File(Meta):
 
 def dump(f, ident=0):
     prefix = ' ' * ident
-    print prefix + os.path.split(f.path)[1]
+    print (prefix + os.path.split(f.path)[1])
     if f.is_folder():
         for e in f.entries():
             dump(e, ident + 2)
@@ -126,40 +128,54 @@ def dump(f, ident=0):
 
 def download_tts_for(f):
     filename = f.meta_file('tts.mp3')
+        
     if os.path.exists(filename):
         return
+        
     if f.is_folder():
         tts = str(f)
+        
     else:
         tag = eyeD3.Tag()
         tag.link(f.path)
         tts = tag.getTitle()
-    if type(tts) is unicode:
-	tts = tts.encode('utf-8')
-    print "Downloading TTS for %s: %s" % (f.path, tts)
+        
+    if isinstance(tts, unicode):
+        tts = tts.encode('utf-8')
+        print (f'Downloading TTS for {f.path} {tts}')
+        
     opener = urllib2.build_opener()
+        
     opener.addheaders = [('User-agent', 'Mozilla/5.0')]
-    print "tts: ", tts
+        
+    print (f'tts: {tts}')
+        
     args = urllib.urlencode({'tl': language, 'q': tts}) # language as configured
     try:
         response = opener.open('http://translate.google.com/translate_tts?' + args)
         with open(filename, "wb") as out:
             out.write(response.read())
+        
     except urllib2.HTTPError as e:
-        print e
-        print "error, tts: ", tts
+        print(e)
+        print (f'error, tts: {tts}')
+        
     except Exception as e:
-	print e
+        print (e)
+        
     if os.path.exists(filename):
-	filesize = os.path.getsize(filename)
-	if filesize <= 1000:
-		print "filename: ", filename
-		print "filesize: ", filesize
-		try:
-			os.remove(filename)
-		except OSError:
-			print "error deleting file <1KB"
-			pass
+        filesize = os.path.getsize(filename)
+
+    if filesize <= 1000:
+        print (f'filename: {filename}')
+        print (f'filesize: {filesize}')
+            
+        try:
+            os.remove(filename)
+            
+        except OSError:
+            print('Error Deleting file < 1KB')
+            pass
 
 
 #
@@ -169,11 +185,11 @@ def download_tts_for(f):
 def play(path):
     client.clear()
     try:
-        print "playing", path
+        print (f'playing {path}')
         client.add(path[len(PATH) + 1:])
         client.play()
     except CommandError as e:
-        print e
+        print (e)
 
 
 class Screen(object):
@@ -182,36 +198,37 @@ class Screen(object):
 
     def handle_up(self):
         if self.item.parent is None:
-            print "already at top level of hierarchy, will stay in same folder"
-	    client.play()
-	    return None
+            print ('already at top level of hierarchy, will stay in same folder')
+            client.play()
+            return None
         return FolderBrowser(self.item.parent, self.item)
 		
     def handle_volume_up(self):
-	if USB_audio == 0:  # USB_audio as configured
-        	client.setvol(min(100, int(client.status()['volume']) + 5))
-        	print "Volume: %s" % client.status()['volume']
-	if USB_audio ==1:
-		os.system("amixer set 'Speaker' 2dB+")
+        if USB_audio == 0:  # USB_audio as configured
+            client.setvol(min(100, int(client.status()['volume']) + 5))
+            print ('Volume:' + str(client.status()['volume']))
+        if USB_audio ==1:
+            os.system("amixer set 'Speaker' 2dB+")
     
     def handle_volume_down(self):
-	if USB_audio == 0:
-        	client.setvol(max(0, int(client.status()['volume']) - 5))
-        	print "Volume: %s" % client.status()['volume']
-	if USB_audio == 1:
-		os.system("amixer set 'Speaker' 2dB-")
+        if USB_audio == 0:
+            client.setvol(max(0, int(client.status()['volume']) - 5))
+            print ("Volume: %s") % client.status()['volume']
+        
+        if USB_audio == 1:
+            os.system("amixer set 'Speaker' 2dB-")
 
     def handle_volume_up_large(self):
         if USB_audio == 0:
                 client.setvol(min(100, int(client.status()['volume']) + 5))
-                print "Volume: %s" % client.status()['volume']
+                print ("Volume: %s") % client.status()['volume']
         if USB_audio ==1:
                 os.system("amixer set 'Speaker' 10dB+")
     
     def handle_volume_down_large(self):
         if USB_audio == 0:
                 client.setvol(max(0, int(client.status()['volume']) - 5))
-                print "Volume: %s" % client.status()['volume']
+                print ("Volume: %s") % client.status()['volume']
         if USB_audio == 1:
                 os.system("amixer set 'Speaker' 10dB-")
 
@@ -280,12 +297,12 @@ class MusicPlayer(Screen):
         elapsed = int(float(client.status().get('elapsed', "0")))
         index = self.file.parent.entries().index(self.file)
         if elapsed > 30:
-            print "creating bookmark at %d-%d" % (index, elapsed)
+            print (f'creating bookmark at {index}-{elapsed}')
             with open(self.file.parent.meta_file('bookmark.txt'), 'w') as f:
                 f.write(str(index) + '\n')
                 f.write(str(elapsed) + '\n')
         else:
-            print "not creating bookmark, elapsed = %ds <= 30s" % elapsed
+            print (f'not creating bookmark, elapsed = {elapsed} <= 30s')
 
     def handle_up(self):
         self.maybe_set_bookmark()
@@ -334,7 +351,7 @@ def get_screen_for_bookmark(folder):
         with open(folder.meta_file('bookmark.txt'), 'r') as f:
             index = int(f.readline())
             mark = int(f.readline())
-        print "found mark: %d-%d" % (index, mark)
+        print (f"found mark: {index}-{mark}")
         return MusicPlayer(folder.entries()[index], mark)
     except IOError:
         return None
@@ -367,9 +384,9 @@ class FileBrowser(object):
             return  # current screen is not interested
         next = getattr(self.current, handler)()  # invoke handler
         if next:
-            print "transition: ", next
+            print (f"transition: {next}")
             self.current = get_screen(next)
-            print "new screen: ", self.current
+            print (f"new screen: {self.current}")
 
 
 #
@@ -394,16 +411,16 @@ def checkForUSBDevice(name):
             if device.get('ID_FS_LABEL') == name:
                 res = device.device_node
     except Exception:
-        print "error"
+        print ("error")
     return res
 
-print "Waiting for usb device '%s'" % USBName
+print (f"Waiting for usb device {USBName}")
 
 while True:
     device = checkForUSBDevice(USBName)
     if device:
-        print "Mounting %s" % device
-        os.system("mount -o iocharset=utf8,uid=mpd,gid=audio,umask=000 " + device + " /mnt/usb")
+        print (f"Mounting {device}")
+        os.system(f"mount -o iocharset=utf8,uid=mpd,gid=audio,umask=000 {device} /mnt/usb")
         break
     time.sleep(1)
 
@@ -444,7 +461,7 @@ def run():
     while True:
         # check if usb is still there
         if not checkForUSBDevice(USBName):
-            print "lost usb device - exiting"
+            print ("lost usb device - exiting")
             os.system("mpc stop")
             os.system("/etc/init.d/mpd stop")
             os.system("umount /mnt/usb")
@@ -459,9 +476,9 @@ def run():
         if char:
             # handle input
             if time.time() - last < key_delay:  # intra/inter key delay in seconds, value configured
-                print "command '%s' - ignored" % char
+                print (f'command {char} - ignored')
             else:
-                print "command '%s'" % char
+                print (f'command {char}')
                 fb.handle(char)
                 last = time.time()
         fb.handle('tick')
