@@ -133,7 +133,7 @@ def download_tts_for(f):
         tts = str(f)
         
     else:
-        tag = eyeD3.Tag()
+        tag = eyed3.core.Tag()
         tag.link(f.path)
         tts = tag.getTitle()
         
@@ -147,7 +147,7 @@ def download_tts_for(f):
         
     print (f'tts: {tts}')
         
-    args = urllib.urlencode({'tl': language, 'q': tts}) # language as configured
+    args = urllib.parse.urlencode({'tl': language, 'q': tts}) # language as configured
     try:
         response = opener.open('http://translate.google.com/translate_tts?' + args)
         with open(filename, "wb") as out:
@@ -163,9 +163,9 @@ def download_tts_for(f):
     if os.path.exists(filename):
         filesize = os.path.getsize(filename)
 
-    if filesize <= 1000:
-        print (f'filename: {filename}')
-        print (f'filesize: {filesize}')
+        if filesize <= 1000:
+            print (f'filename: {filename}')
+            print (f'filesize: {filesize}')
             
         try:
             os.remove(filename)
