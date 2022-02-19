@@ -33,16 +33,15 @@ key_delay=0.3
 
 import os
 import pyudev
-import eyeD3
+import eyed3
 import urllib
-import urllib2
+import urllib.request as urllib2
 import sys
 import select
 import tty
 import termios
 import time
-
-from mpd import (MPDClient, CommandError)
+from musicpd import (MPDClient, CommandError)
 
 #
 #
