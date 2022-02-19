@@ -31,9 +31,7 @@ language='de'
 key_delay=0.3
 
 
-from asyncore import file_dispatcher
 import os
-from platform import mac_ver
 import pyudev
 import eyeD3
 import urllib
