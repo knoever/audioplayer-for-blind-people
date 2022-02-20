@@ -379,7 +379,7 @@ assert PATH[-1] != '/'
 root = Folder(PATH, None)
 
 for f in root.entries(recursive=True):
-    tts = TTS(f)
+    tts = TTS(str(f))
     tts.download_tts_filename()
     tts.play_tts()
 
