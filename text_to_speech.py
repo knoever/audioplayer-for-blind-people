@@ -1,21 +1,17 @@
-import gtts, os
+import gtts
 from playsound import playsound
 
+class TTS:
+    def __init__(self, filename) -> None:
+        self.filename = filename
+    
+    def download_tts_filename(self):
+        with open(f'tts.mp3', 'wb') as mp3:
+            tts = gtts.gTTS(self.filename)
+            tts.write_to_fp(mp3)
+    
+    def play_tts(self):
+        playsound('tts.mp3')
 
-files = os.listdir()
-
-#tts = gtts.gTTS("Hello World")
-
-#tts_file = tts.save('hello.mp3')
-
-#playsound('hello.mp3')
-
-for f in files:
-    print(f)
-
-with open('test.mp3', 'wb') as mp3:
-    for f in files:
-        tts = gtts.gTTS(f)
-        tts.write_to_fp(mp3)
-
-playsound('test.mp3')
+if __name__ == '__main__':
+    pass
