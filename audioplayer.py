@@ -34,14 +34,13 @@ key_delay=0.3
 import os
 import pyudev
 import eyed3
-import urllib
-import urllib.request as urllib2
 import sys
 import select
 import tty
 import termios
 import time
 from musicpd import (MPDClient, CommandError)
+from text_to_speech import TTS
 
 #
 #
@@ -121,58 +120,6 @@ def dump(f, ident=0):
     if f.is_folder():
         for e in f.entries():
             dump(e, ident + 2)
-
-
-def download_tts_for(f):
-    filename = f.meta_file('tts.mp3')
-        
-    if os.path.exists(filename):
-        return
-        
-    if f.is_folder():
-        tts = str(f)
-        
-    else:
-        tag = eyed3.core.Tag()
-        tag.link(f.path)
-        tts = tag.getTitle()
-        
-    if isinstance(tts, unicode):
-        tts = tts.encode('utf-8')
-        print (f'Downloading TTS for {f.path} {tts}')
-        
-    opener = urllib2.build_opener()
-        
-    opener.addheaders = [('User-agent', 'Mozilla/5.0')]
-        
-    print (f'tts: {tts}')
-        
-    args = urllib.parse.urlencode({'tl': language, 'q': tts}) # language as configured
-    try:
-        response = opener.open('http://translate.google.com/translate_tts?' + args)
-        with open(filename, "wb") as out:
-            out.write(response.read())
-        
-    except urllib2.HTTPError as e:
-        print(e)
-        print (f'error, tts: {tts}')
-        
-    except Exception as e:
-        print (e)
-        
-    if os.path.exists(filename):
-        filesize = os.path.getsize(filename)
-
-        if filesize <= 1000:
-            print (f'filename: {filename}')
-            print (f'filesize: {filesize}')
-            
-        try:
-            os.remove(filename)
-            
-        except OSError:
-            print('Error Deleting file < 1KB')
-            pass
 
 
 #
@@ -432,7 +379,9 @@ assert PATH[-1] != '/'
 root = Folder(PATH, None)
 
 for f in root.entries(recursive=True):
-    download_tts_for(f)
+    tts = TTS(f)
+    tts.download_tts_filename()
+    tts.play_tts()
 
 
 #
