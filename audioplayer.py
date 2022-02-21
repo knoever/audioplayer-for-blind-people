@@ -32,8 +32,7 @@ key_delay=0.3
 
 
 import os
-import pyudev
-import eyed3
+from re import T
 import sys
 import select
 import tty
@@ -379,10 +378,9 @@ assert PATH[-1] != '/'
 root = Folder(PATH, None)
 
 for f in root.entries(recursive=True):
-    tts = TTS(str(f))
-    tts.download_tts_filename()
-    tts.play_tts()
-
+    path = f.meta_file('tts.mp3')
+    mp3_tts = TTS(str(f), path)
+    mp3_tts.download_tts_filename()
 
 #
 #

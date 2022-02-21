@@ -2,11 +2,12 @@ import gtts
 from playsound import playsound
 
 class TTS:
-    def __init__(self, filename) -> None:
+    def __init__(self, filename, path) -> None:
         self.filename = filename
+        self.path = path
     
     def download_tts_filename(self):
-        with open(f'tts.mp3', 'wb') as mp3:
+        with open(self.path, 'wb') as mp3:
             tts = gtts.gTTS(self.filename)
             tts.write_to_fp(mp3)
     
