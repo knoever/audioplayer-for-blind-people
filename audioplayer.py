@@ -32,7 +32,6 @@ key_delay=0.3
 
 
 import os
-from re import T
 import sys
 import select
 import tty
