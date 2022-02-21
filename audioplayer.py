@@ -32,6 +32,7 @@ key_delay=0.3
 
 
 import os
+import pyudev
 import sys
 import select
 import tty
