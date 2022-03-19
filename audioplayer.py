@@ -433,5 +433,6 @@ try:
     tty.setcbreak(sys.stdin.fileno())
     run()
 finally:
+    old_settings = termios.tcgetattr(sys.stdin)
     termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_settings)
 exit()
