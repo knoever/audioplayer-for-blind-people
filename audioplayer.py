@@ -25,6 +25,8 @@ USB_audio=1
 #	command buttons, this may need to be adjusted
 key_delay=0.3
 
+#Test
+
 
 import os
 import pyudev
