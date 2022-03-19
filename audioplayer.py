@@ -19,11 +19,6 @@
 #	In this case USB_audio must be set to '1'. 
 USB_audio=1
 
-#	Speech to text language
-#	Default is "en"
-#	other languages, see https://sites.google.com/site/tomihasa/google-language-codes
-language='de'
-
 #	Key delay
 #	This is the minimum time interval in seconds between 2 commands to be executed as
 #	separate commands.Depending on whether the user is fast or slow in pushing the
