@@ -135,7 +135,7 @@ def play(path):
         print (e)
 
 
-class Screen(object):
+class Screen:
     def __init__(self, item):
         self.item = item
 
@@ -300,7 +300,7 @@ def get_screen_for_bookmark(folder):
         return None
 
 
-class FileBrowser(object):
+class FileBrowser:
     def __init__(self, folder):
         self.folder = folder
         self.current = get_screen(folder)
