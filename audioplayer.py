@@ -333,8 +333,8 @@ class FileBrowser(object):
 #
 #	Reset at start
 
-os.system("/etc/init.d/mpd stop")
-os.system("umount /mnt/usb")
+os.system("sudo /etc/init.d/mpd stop")
+os.system("sudo umount /mnt/usb")
 
 
 #
@@ -360,7 +360,7 @@ while True:
     device = checkForUSBDevice(USBName)
     if device:
         print (f"Mounting {device}")
-        os.system(f"mount -o iocharset=utf8,uid=mpd,gid=audio,umask=000 {device} /mnt/usb")
+        os.system(f"sudo mount -o iocharset=utf8,uid=mpd,gid=audio,umask=000 {device} /mnt/usb")
         break
     time.sleep(1)
 
@@ -383,13 +383,13 @@ for f in root.entries(recursive=True):
 #
 #	Activate media player
 
-os.system("/etc/init.d/mpd start")
+os.system("sudo /etc/init.d/mpd start")
 
 client = MPDClient()
 client.timeout = 60
 client.idletimeout = None
 client.connect("localhost", 6600)
-os.system("mpc update")
+os.system("sudo mpc update")
 
 
 #
@@ -403,9 +403,9 @@ def run():
         # check if usb is still there
         if not checkForUSBDevice(USBName):
             print ("lost usb device - exiting")
-            os.system("mpc stop")
-            os.system("/etc/init.d/mpd stop")
-            os.system("umount /mnt/usb")
+            os.system("sudo mpc stop")
+            os.system("sudo /etc/init.d/mpd stop")
+            os.system("sudo umount /mnt/usb")
             return # exit - and restart
 
         # check for input
@@ -424,7 +424,6 @@ def run():
                 last = time.time()
         fb.handle('tick')
 
-
 #
 #
 # use single character input without "return" as command
@@ -432,7 +431,8 @@ try:
     old_settings = termios.tcgetattr(sys.stdin)
     tty.setcbreak(sys.stdin.fileno())
     run()
+
 finally:
-    old_settings = termios.tcgetattr(sys.stdin)
+    #old_settings = termios.tcgetattr(sys.stdin)
     termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_settings)
 exit()
