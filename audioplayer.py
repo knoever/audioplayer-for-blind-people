@@ -35,6 +35,7 @@ import select
 import tty
 import termios
 import time
+import requests
 from musicpd import (MPDClient, CommandError)
 from text_to_speech import TTS
 
@@ -364,6 +365,18 @@ while True:
         break
     time.sleep(1)
 
+def internet_connection():
+    url = "https://www.google.com"
+    timeout = 10
+    try:
+        # requesting URL
+        request = requests.get(url, timeout=timeout)
+        return True
+  
+        # catching exception
+    except (requests.ConnectionError, requests.Timeout):
+        return False
+
 
 #
 #
@@ -374,10 +387,13 @@ assert PATH[-1] != '/'
 
 root = Folder(PATH, None)
 
-for f in root.entries(recursive=True):
-    path = f.meta_file('tts.mp3')
-    mp3_tts = TTS(str(f), path)
-    mp3_tts.download_tts_filename()
+internet = internet_connection()
+
+if internet:
+    for f in root.entries(recursive=True):
+        path = f.meta_file('tts.mp3')
+        mp3_tts = TTS(str(f), path)
+        mp3_tts.download_tts_filename()
 
 #
 #
