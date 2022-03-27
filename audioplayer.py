@@ -19,11 +19,6 @@
 #	In this case USB_audio must be set to '1'. 
 USB_audio=1
 
-#	Speech to text language
-#	Default is "en"
-#	other languages, see https://sites.google.com/site/tomihasa/google-language-codes
-language='de'
-
 #	Key delay
 #	This is the minimum time interval in seconds between 2 commands to be executed as
 #	separate commands.Depending on whether the user is fast or slow in pushing the
@@ -45,7 +40,7 @@ from text_to_speech import TTS
 #
 #	Generation of text to speech files
 
-class Meta(object):
+class Meta:
     def __init__(self, path, parent):
         """
         :type path: str
@@ -145,19 +140,19 @@ class Screen:
             client.play()
             return None
         return FolderBrowser(self.item.parent, self.item)
-		
+
     def handle_volume_up(self):
         if USB_audio == 0:  # USB_audio as configured
             client.setvol(min(100, int(client.status()['volume']) + 5))
             print ('Volume:' + str(client.status()['volume']))
         if USB_audio ==1:
             os.system("amixer set 'Speaker' 2dB+")
-    
+
     def handle_volume_down(self):
         if USB_audio == 0:
             client.setvol(max(0, int(client.status()['volume']) - 5))
             print ("Volume: %s") % client.status()['volume']
-        
+
         if USB_audio == 1:
             os.system("amixer set 'Speaker' 2dB-")
 
@@ -167,7 +162,7 @@ class Screen:
                 print ("Volume: %s") % client.status()['volume']
         if USB_audio ==1:
                 os.system("amixer set 'Speaker' 10dB+")
-    
+
     def handle_volume_down_large(self):
         if USB_audio == 0:
                 client.setvol(max(0, int(client.status()['volume']) - 5))
@@ -317,8 +312,8 @@ class FileBrowser:
                     'v': 'handle_volume_down',
                     'p': 'handle_play_pause',
                     'tick': 'handle_tick',
-		    'g': 'handle_volume_down_large', # SOURCE
-		    'q': 'handle_volume_up_large',}  # BAND	
+                    'g': 'handle_volume_down_large', # SOURCE
+                    'q': 'handle_volume_up_large',}  # BAND	
         handler = handlers.get(input)
 
         if not handler:
@@ -372,7 +367,7 @@ while True:
 #
 #	Run generation of metafolders and files
 
-PATH = '/var/lib/mpd/music'  
+PATH = '/var/lib/mpd/music'
 assert PATH[-1] != '/'
 
 root = Folder(PATH, None)
@@ -416,7 +411,7 @@ def run():
         if select.select([sys.stdin], [], [], 0.5)[0]:
             char = os.read(sys.stdin.fileno(), 1)
             char = char if type(char) is str else char.decode()
-	    
+
         if char:
             # handle input
             if time.time() - last < key_delay:  # intra/inter key delay in seconds, value configured
