@@ -6,8 +6,8 @@
 #  	the Free Software Foundation, either version 3 of the License, or
 #  	(at your option) any later version.
 
-#	python 2.7
-#	revision date: 8-Mar-2015
+#	python 3.9
+#	revision date: 26-Mar-2022
 
 #	Volume control: 
 #	Default is using the RasPi audio output with software volume control.
@@ -24,8 +24,6 @@ USB_audio=1
 #	separate commands.Depending on whether the user is fast or slow in pushing the
 #	command buttons, this may need to be adjusted
 key_delay=0.3
-
-#Test
 
 
 import os
